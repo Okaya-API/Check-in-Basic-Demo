@@ -3,7 +3,7 @@
 Welcome to our API.
 
 In our GitHub, you can:
-- Access our [QuickStart](https://github.com/SmartTecAPI/api/wiki "QuickStart") documentation and wiki.
+- Access our [QuickStart](https://github.com/SmartTecAPI/api/wiki/Getting-Started "QuickStart") documentation and wiki.
 - Get code examples on how you can integrate the Okaya API in your environment.
 
 Feel free to reach out to us with any question or concern that you have !
