@@ -50,12 +50,14 @@
         <input type="submit"  onclick="updateKey();" value="Submit">
     </div>
       <br><br>
-    <video id="okayaVideo" playsinline class="video-js vjs-default-skin"></video>
+      <div class="row" id="videoPanel" >
+            <video id="okayaVideo" playsinline class="video-js vjs-default-skin"></video>
+        </div>
 
     <script>
     function hideAll() {
         $("#introPanel").hide();
-        $("#okayaVideo").hide();
+        $("#videoPanel").hide();
          
         
     }
@@ -94,7 +96,7 @@
             console.log("Your api key: " + userKey)
             if (k.length>15 && k.length<700){
             $("#introPanel").hide();
-            $("#okayaVideo").show();
+            $("#videoPanel").show();
             }
         }
 
@@ -120,40 +122,43 @@
             var xhr = new XMLHttpRequest();
             xhr.withCredentials = true;
 
-            xhr.addEventListener("readystatechange", function()
-                {
-                    if (this.readyState === 4)
-                {
-                    console.log(this.responseText);
-                }
-                }
-            );
+            
             var listOfDataScienceOptions = [
-          {
-            "option": 1,
-            "value": "1"
-          },
-          {
-            "option": 2,
-            "value":  'web|' + '0|' + '0|' +  '0|'
-          }
-        ];
+                {
+                    "option": 1,
+                    "value": "1"
+                },
+                {
+                    "option": 2,
+                    "value":  'web|' + '0|' + '0|' +  '0|'
+                }
+            ];
 
-        var patientID = userKey.split("|")[0];
-        console.log("Your api key 2: " + userKey)
-        var strDtVideoTaken = formatDate();
-        
-        // Create a form data object using the FormData API
-        const formData = new FormData();
-        formData.append("uploadedFile", data, 'demo.mp4');
-        formData.append('patientID', patientID);
-        formData.append('strDtVideoTaken', strDtVideoTaken);
-        formData.append('listOfDataScienceOptions', JSON.stringify(listOfDataScienceOptions));
+            var patientID = userKey.split("|")[0];
+            console.log("Your api key 2: " + userKey)
+            var strDtVideoTaken = formatDate();
+            
+            // Create a form data object using the FormData API
+            const formData = new FormData();
+            formData.append("uploadedFile", data, 'demo.mp4');
+            formData.append('patientID', patientID);
+            formData.append('strDtVideoTaken', strDtVideoTaken);
+            formData.append('listOfDataScienceOptions', JSON.stringify(listOfDataScienceOptions));
             xhr.open("POST", "https://smarttecapi2021.azurewebsites.net/api/V1/checkin");
             xhr.setRequestHeader("Authorization", userKey);
-
             xhr.send(formData);
+
+            xhr.addEventListener("readystatechange", function(){
+                    if (this.readyState === 4)
+                    {
+                        console.log(this.responseText);
+                        var n = this.responseText.lastIndexOf('/');
+                        var result = this.responseText.substring(n + 1);
+                        alert ("Upload completed. Confirmation number: " + result);
+                    }
             });
+
+        });
         
         function  formatDate() {
             var yourDate = new Date();
