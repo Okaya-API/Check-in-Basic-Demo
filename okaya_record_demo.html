@@ -1,0 +1,162 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Okaya | Record</title>
+
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+
+    <!-- Load the files via CDN -->
+
+    <link href="https://vjs.zencdn.net/7.17.0/video-js.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/videojs-record/4.5.0/css/videojs.record.min.css" integrity="sha512-Lh6tnGieGjpRa/uz9zsknJaWcEmTa/GIyelGDqc4/8T2giyFVOM0xGIPN6T4UG/3cT/XfQb9KdJSs6gH/dc13A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://vjs.zencdn.net/7.17.0/video.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/videojs-record/4.5.0/videojs.record.min.js" integrity="sha512-KyqFiWIhWWHzDDzgeQnIlVC8NObpEc8RmggKoj2xxXoBqPMcFSd3c9MoKKfCxkspO1H3Ofw6lkOVRhUw4snV1g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/RecordRTC/5.6.2/RecordRTC.min.js" integrity="sha512-IMLquIKoKQeQ+kYuec3BvLYjy3yF2nH/ojHPkXQnQTeGKRliZcVed19I6E0t+WBt+9uPuEba0t2iyZAVP8mdlw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/6.1.4/adapter.min.js" integrity="sha512-FZkQmTcqSzV2aNpWszYA/pPUISx6QjI60lKGwnIsfNFCGqUB7gcobQ9StH3hQCKFN92md3fCaXLzzSpoFat57A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <link href="../node_modules/video.js/dist/video-js.min.css" rel="stylesheet">
+    <link href="../dist/css/videojs.record.css" rel="stylesheet">
+     <link href="assets/css/examples.css" rel="stylesheet">
+
+    <script src="../node_modules/video.js/dist/video.min.js"></script>
+    <script src="../node_modules/recordrtc/RecordRTC.js"></script>
+    <script src="../node_modules/webrtc-adapter/out/adapter.js"></script>
+
+    <script src="../dist/videojs.record.js"></script>
+
+    <script src="browser-workarounds.js"></script>
+
+    <style>
+    /* change player background color */
+    #myVideo {
+       background-color: #9ab87a;
+    }
+    </style>
+
+</head>
+<body class="blank">
+   
+    <!-- Main view  -->
+    <div id="wrapper" style="min-height: 1235px;">
+
+
+
+<div class="record-container">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Record a video</h2>
+            <p>
+                Here you can record a video and send it to the Okaya API.<br>When the video stops recording or reaches 20 seconds it will send to the API!
+            </p>
+        </div>
+    </div>
+    <form>
+        <label for="key">First, enter your key:</label>
+        <input type="text" id="key" name="key"><br>
+        <input type="submit"  onclick="updateKey()" value="Submit">
+      </form>
+      <br><br>
+    <video id="okayaVideo" playsinline class="video-js vjs-default-skin"></video>
+
+    <script>
+        var options = {
+            controls:true,
+            bigPlayButton: false,
+            width: 560,
+            height: 420,
+            fluid: false, // makes the size adjust to fit window
+            plugins: {
+                record: {
+                    audio: true,
+                    video: true,
+                    maxLength: 20,
+                    debug: false
+                }
+            }
+        };
+        
+        var userKey = "demo";
+
+        var player = videojs('okayaVideo', options, function() {
+            var msg = 'Using video.js ' + videojs.VERSION +
+        ' with videojs-record ' + videojs.getPluginVersion('record') +
+        ' and recordrtc ' + RecordRTC.version;
+    videojs.log(msg);
+        });
+
+        function updateKey(k){
+            userKey = k;
+        }
+
+        player.on('deviceError', function() {
+            console.log('device error:', player.deviceErrorCode);
+        });
+
+        player.on('error', function(element, error) {
+            console.error(error);
+        });
+
+        // record button is clicked
+        player.on('startRecord', function() {
+            console.log('started recording');
+        });
+
+        // recording is finished
+        player.on('finishRecord', function() {
+            // blob object contains the recorded data to send to the API
+            console.log('finished recording: ', player.recordedData);
+            var data = player.recordedData;
+
+            var xhr = new XMLHttpRequest();
+            xhr.withCredentials = true;
+
+            xhr.addEventListener("readystatechange", function()
+                {
+                    if (this.readyState === 4)
+                {
+                    console.log(this.responseText);
+                }
+                }
+            );
+
+            xhr.open("POST", "https://smarttecapi2021.azurewebsites.net/api/V1/checkin");
+            xhr.setRequestHeader("Authorization", userKey);
+
+            xhr.send(data);
+            });
+    </script>
+
+
+        <!-- Right Sidebar -->
+        <div id="right-sidebar" class="animated fadeInRight">
+
+
+
+        </div>
+
+        <!-- Footer-->
+
+        <!-- <footer class="footer">
+            Built with <i class="pe-7s-like"></i> in Colorado. Okaya 2021
+        </footer>
+        -->
+    </div>
+
+    <!-- Section for main scripts render
+       <script src="/dashboard/bundles/jquery/js?v=LCTUWYjF9I-Sw3l0P8Zn6_b6478OuizeBkjnoe30Tcc1"></script>
+    -->
+    <script src="/dashboard/Vendor/jquery/dist/jquery.min.js"></script>
+
+    <script src="/dashboard/bundles/bootstrap/js?v=lescQEuG5u4jd-GcVDBcbpUOSyTDIg0Kk9zHDX55GCw1"></script>
+
+    <script src="/dashboard/bundles/homer/js?v=5LKJhz1bcnWMUDfzGz7tbUgWEBjRVoTRvsdOPPj0Bsg1"></script>
+
+
+
+</body>
+</html>
