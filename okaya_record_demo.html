@@ -6,31 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-    <title>Okaya | Record</title>
+    <title>Okaya | Demo </title>
 
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
 
     <!-- Load the files via CDN -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <link href="https://vjs.zencdn.net/7.17.0/video-js.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/videojs-record/4.5.0/css/videojs.record.min.css" integrity="sha512-Lh6tnGieGjpRa/uz9zsknJaWcEmTa/GIyelGDqc4/8T2giyFVOM0xGIPN6T4UG/3cT/XfQb9KdJSs6gH/dc13A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script src="https://vjs.zencdn.net/7.17.0/video.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/videojs-record/4.5.0/videojs.record.min.js" integrity="sha512-KyqFiWIhWWHzDDzgeQnIlVC8NObpEc8RmggKoj2xxXoBqPMcFSd3c9MoKKfCxkspO1H3Ofw6lkOVRhUw4snV1g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/RecordRTC/5.6.2/RecordRTC.min.js" integrity="sha512-IMLquIKoKQeQ+kYuec3BvLYjy3yF2nH/ojHPkXQnQTeGKRliZcVed19I6E0t+WBt+9uPuEba0t2iyZAVP8mdlw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/6.1.4/adapter.min.js" integrity="sha512-FZkQmTcqSzV2aNpWszYA/pPUISx6QjI60lKGwnIsfNFCGqUB7gcobQ9StH3hQCKFN92md3fCaXLzzSpoFat57A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-    <link href="../node_modules/video.js/dist/video-js.min.css" rel="stylesheet">
-    <link href="../dist/css/videojs.record.css" rel="stylesheet">
-     <link href="assets/css/examples.css" rel="stylesheet">
-
-    <script src="../node_modules/video.js/dist/video.min.js"></script>
-    <script src="../node_modules/recordrtc/RecordRTC.js"></script>
-    <script src="../node_modules/webrtc-adapter/out/adapter.js"></script>
-
-    <script src="../dist/videojs.record.js"></script>
-
-    <script src="browser-workarounds.js"></script>
-
+    <link href="https://vjs.zencdn.net/7.8.4/video-js.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/videojs-record/dist/css/videojs.record.min.css">
+    <!-- load script -->
+    <script src="https://vjs.zencdn.net/7.8.4/video.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/RecordRTC/5.6.1/RecordRTC.min.js"></script>
+    <script src="https://unpkg.com/videojs-record/dist/videojs.record.min.js"></script>
+    
     <style>
     /* change player background color */
     #myVideo {
@@ -55,15 +44,24 @@
             </p>
         </div>
     </div>
-    <form>
+    <div class="row" id="introPanel" >
         <label for="key">First, enter your key:</label>
         <input type="text" id="key" name="key"><br>
-        <input type="submit"  onclick="updateKey()" value="Submit">
-      </form>
+        <input type="submit"  onclick="updateKey();" value="Submit">
+    </div>
       <br><br>
     <video id="okayaVideo" playsinline class="video-js vjs-default-skin"></video>
 
     <script>
+    function hideAll() {
+        $("#introPanel").hide();
+        $("#okayaVideo").hide();
+         
+        
+    }
+    hideAll();
+    $("#introPanel").show();
+
         var options = {
             controls:true,
             bigPlayButton: false,
@@ -89,8 +87,15 @@
     videojs.log(msg);
         });
 
-        function updateKey(k){
+        function updateKey(){
+            var k = $('#key').val();
+            
             userKey = k;
+            console.log("Your api key: " + userKey)
+            if (k.length>15 && k.length<700){
+            $("#introPanel").hide();
+            $("#okayaVideo").show();
+            }
         }
 
         player.on('deviceError', function() {
@@ -123,40 +128,50 @@
                 }
                 }
             );
+            var listOfDataScienceOptions = [
+          {
+            "option": 1,
+            "value": "1"
+          },
+          {
+            "option": 2,
+            "value":  'web|' + '0|' + '0|' +  '0|'
+          }
+        ];
 
+        var patientID = userKey.split("|")[0];
+        console.log("Your api key 2: " + userKey)
+        var strDtVideoTaken = formatDate();
+        
+        // Create a form data object using the FormData API
+        const formData = new FormData();
+        formData.append("uploadedFile", data, 'demo.mp4');
+        formData.append('patientID', patientID);
+        formData.append('strDtVideoTaken', strDtVideoTaken);
+        formData.append('listOfDataScienceOptions', JSON.stringify(listOfDataScienceOptions));
             xhr.open("POST", "https://smarttecapi2021.azurewebsites.net/api/V1/checkin");
             xhr.setRequestHeader("Authorization", userKey);
 
-            xhr.send(data);
+            xhr.send(formData);
             });
+        
+        function  formatDate() {
+            var yourDate = new Date();
+            const offset = yourDate.getTimezoneOffset();
+            yourDate = new Date(yourDate.getTime() - (offset * 60 * 1000));
+            var date = yourDate.toISOString().split('T')[0]
+            var d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear();
+
+            if (month.length < 2)
+            month = '0' + month;
+            if (day.length < 2)
+            day = '0' + day;
+
+            return [year, month, day].join('/');
+        }
     </script>
-
-
-        <!-- Right Sidebar -->
-        <div id="right-sidebar" class="animated fadeInRight">
-
-
-
-        </div>
-
-        <!-- Footer-->
-
-        <!-- <footer class="footer">
-            Built with <i class="pe-7s-like"></i> in Colorado. Okaya 2021
-        </footer>
-        -->
-    </div>
-
-    <!-- Section for main scripts render
-       <script src="/dashboard/bundles/jquery/js?v=LCTUWYjF9I-Sw3l0P8Zn6_b6478OuizeBkjnoe30Tcc1"></script>
-    -->
-    <script src="/dashboard/Vendor/jquery/dist/jquery.min.js"></script>
-
-    <script src="/dashboard/bundles/bootstrap/js?v=lescQEuG5u4jd-GcVDBcbpUOSyTDIg0Kk9zHDX55GCw1"></script>
-
-    <script src="/dashboard/bundles/homer/js?v=5LKJhz1bcnWMUDfzGz7tbUgWEBjRVoTRvsdOPPj0Bsg1"></script>
-
-
-
 </body>
 </html>
