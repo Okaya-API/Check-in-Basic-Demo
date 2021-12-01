@@ -51,11 +51,12 @@
     </div>
       <br><br>
     <video id="okayaVideo" playsinline class="video-js vjs-default-skin"></video>
-
+    <button id="sendButton" type="button" onclick="send()">Send Video</button>
     <script>
     function hideAll() {
         $("#introPanel").hide();
         $("#okayaVideo").hide();
+        $("#sendButton").hide();
          
         
     }
@@ -79,7 +80,7 @@
         };
         
         var userKey = "demo";
-
+        var data = null;
         var player = videojs('okayaVideo', options, function() {
             var msg = 'Using video.js ' + videojs.VERSION +
         ' with videojs-record ' + videojs.getPluginVersion('record') +
@@ -95,6 +96,7 @@
             if (k.length>15 && k.length<700){
             $("#introPanel").hide();
             $("#okayaVideo").show();
+            $("#sendButton").show();
             }
         }
 
@@ -115,11 +117,16 @@
         player.on('finishRecord', function() {
             // blob object contains the recorded data to send to the API
             console.log('finished recording: ', player.recordedData);
-            var data = player.recordedData;
+            data = player.recordedData;
+            });
 
+            function send(){
             var xhr = new XMLHttpRequest();
             xhr.withCredentials = true;
-
+            
+            if (data === null){
+                console.error("You did not record a video!")
+            }
             xhr.addEventListener("readystatechange", function()
                 {
                     if (this.readyState === 4)
@@ -153,7 +160,7 @@
             xhr.setRequestHeader("Authorization", userKey);
 
             xhr.send(formData);
-            });
+            }
         
         function  formatDate() {
             var yourDate = new Date();
@@ -173,5 +180,6 @@
             return [year, month, day].join('/');
         }
     </script>
+    
 </body>
 </html>
