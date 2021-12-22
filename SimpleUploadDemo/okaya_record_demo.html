@@ -42,6 +42,8 @@
             <p>
                 Here you can record a video and send it to the Okaya API.<br>When the video stops recording or reaches 20 seconds it will send to the API!
             </p>
+            <p>Wondering what to say?  How about answering this question:<br/>
+            How is your week going ?</p>
         </div>
     </div>
     <div class="row" id="introPanel" >
@@ -51,8 +53,9 @@
     </div>
       <br><br>
       <div class="row" id="videoPanel" >
-        <video id="okayaVideo" playsinline class="video-js vjs-default-skin"></video>
-        <button id="sendButton" type="button" onclick="send()">Send Video</button>
+        <video id="okayaVideo" playsinline class="video-js vjs-default-skin"></video> <br>
+
+        <button id="sendButton" type="button" onclick="send()"><strong>Send Video</strong></button>
     </div>
     
     <script>
@@ -123,6 +126,7 @@
             });
 
         function send(){
+            $("#sendButton").hide(); 
             var xhr = new XMLHttpRequest();
             xhr.withCredentials = true;
 
