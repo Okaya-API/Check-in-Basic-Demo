@@ -12,7 +12,7 @@ Feel free to reach out to us with any question or concern that you have !
 <h1>Okaya's Basic Tutorial</h1>
 
 **Before doing this tutorial**, make sure that you have:
-1. Created your Okaya Account.
+1. Created your Okaya <a href='https://www.okaya.me/dashboard/apimanagement/newaccount'>free account</a>.
 2. Saved your <em>unique</em> API Key.
 
 <h2>Step 1: Send a check-in to the API</h2>
