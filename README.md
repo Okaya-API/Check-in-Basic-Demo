@@ -9,7 +9,7 @@
 
 <h2>Step 1: Send a check-in to the API</h2>
 
-Make your life simpler and use our <a href='https://github.com/SmartTecAPI/api'>demo code</a> as a starting point. <br>
+Make your life simpler and use our <a href='https://github.com/Okaya-API/Check-in-Basic-Demo/blob/main/okaya_record_demo.html'>demo code</a> as a starting point. <br>
 <ol>
 <li>Click the green button <em>Code</em> with the dropdown menu.
 <li>Afterwards, select on the option: "Download Zip", which downloads the folder.
